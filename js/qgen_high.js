@@ -28,33 +28,74 @@
     const results = [];
     for (let i = 0; i < n; i++) {
       const type = i % 4;
-      let q, ans, o, exp;
+      let q, o, exp;
+
       if (type === 0) {
-        // 集合运算
-        const a = rnd(2, 5);
-        const b = rnd(2, 5);
-        const inter = Math.min(a, b);
-        o = opts(inter + "个", () => (a + b) + "个", () => Math.abs(a - b) + "个", () => "0个");
+        // 1. 集合运算：保证 a <= b 使得 A ⊆ B 成立
+        const a = rnd(2, 4);
+        const b = rnd(a, 5); // 确保 b >= a，使得 A ⊆ B 逻辑完全正确
+
         q = `集合 A 有 ${a} 个元素，集合 B 有 ${b} 个元素，若 A⊆B，则 A∩B 有？`;
-        exp = `A⊆B 时 A∩B = A，有 ${a} 个元素。`;
+        exp = `因为 A⊆B，所以 A∩B = A，元素个数即为集合 A 的元素个数，共 ${a} 个。`;
+
+        // 💡 正确传参：传入 () => 满足 opts 的函数要求，且直接返回纯数值+单位的预计算字符串
+        const ans1 = `${a}个`;
+        const ans2 = `${b + 1}个`;
+        const ans3 = `0个`;
+        const ans4 = `${a + b}个`;
+
+        o = opts(
+          ans1,
+          () => ans2,
+          () => ans3,
+          () => ans4
+        );
+
       } else if (type === 1) {
-        // 子集个数
-        const n = rnd(2, 4);
-        const ansCount = Math.pow(2, n);
-        o = opts(`${ansCount}个`, () => ansCount + n, () => ansCount - 1, () => n + "个");
-        q = `集合有 ${n} 个元素，它的子集共有？`;
-        exp = `n 个元素的集合有 2ⁿ 个子集，2^${n} = ${ansCount} 个。`;
+        // 2. 子集个数
+        const num = rnd(2, 4);
+        const ansCount = Math.pow(2, num);
+
+        q = `集合有 ${num} 个元素，它的子集共有？`;
+        exp = `${num} 个元素的集合有 2ⁿ 个子集，即 2^${num} = ${ansCount} 个。`;
+
+        const ans1 = `${ansCount}个`;
+        const ans2 = `${ansCount - 1}个`;
+        const ans3 = `${ansCount + 2}个`;
+        const ans4 = `${num * 2}个`;
+
+        o = opts(
+          ans1,
+          () => ans2,
+          () => ans3,
+          () => ans4
+        );
+
       } else if (type === 2) {
-        // 充分必要条件
-        o = opts("充分不必要", () => "必要不充分", () => "充要", () => "既不充分也不必要");
+        // 3. 充分必要条件
         q = `"x > 2" 是 "x > 1" 的什么条件？`;
         exp = `x > 2 能推出 x > 1（充分），但 x > 1 不能推出 x > 2（不必要），故为充分不必要条件。`;
+
+        o = opts(
+          "充分不必要",
+          () => "必要不充分",
+          () => "充要",
+          () => "既不充分也不必要"
+        );
+
       } else {
-        // 命题否定
-        o = opts("∀x∈R, x² ≥ 0", () => "∃x∈R, x² ≥ 0", () => "∀x∈R, x² < 0", () => "∃x∈R, x² ≤ 0");
+        // 4. 命题否定
         q = `命题 "∃x∈R, x² < 0" 的否定是？`;
-        exp = `存在命题的否定是全称命题：∀x∈R, x² ≥ 0。`;
+        exp = `特称命题（∃）的否定是全称命题（∀），且结论取反：∀x∈R, x² ≥ 0。`;
+
+        o = opts(
+          "∀x∈R, x² ≥ 0",
+          () => "∃x∈R, x² ≥ 0",
+          () => "∀x∈R, x² < 0",
+          () => "∃x∈R, x² ≤ 0"
+        );
       }
+
       results.push(Q(q, o, "基础", exp, "集合与逻辑"));
     }
     return results;

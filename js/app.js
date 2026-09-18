@@ -150,7 +150,7 @@
           <div class="stage-txt"><div class="stage-name">${stage}</div><div class="stage-sub">${meta.sub}</div></div>
           <span class="stage-count">${grades.reduce((s, g) => s + groups[stage + "|" + g].length, 0)} 个技巧</span>
         </div>
-        <div class="grade-grid">`;
+        <div class="grade-grid"></div>`; // 确保这里闭合
       const grid = sec.querySelector(".grade-grid");
       grades.forEach(g => {
         const ts = groups[stage + "|" + g];
@@ -472,8 +472,15 @@
         save(state); updateBadge(); done++;
         if (done === items.length) {
           const b = document.createElement("div"); b.className = "card center";
+          /*
           b.innerHTML = `<div class="qres" style="color:var(--ok)">本轮复习 ${items.length} 题，清空 ${ok} 个薄弱点。</div>
             <a class="btn ghost" href="#/review">刷新</a>`;
+          */
+          <!-- 方案 A：直接修改 href 为 JavaScript 刷新语句 -->
+          b.innerHTML = `<div class="qres" style="color:var(--ok)">本轮复习 ${items.length} 题，清空 ${ok} 个薄弱点。</div>  
+            <a class="btn ghost" href="javascript:location.reload()">刷新</a>`;
+            <!-- 方案 B：绑定点击事件阻止默认路由跳转 -->
+            <!-- <a class="btn ghost" onclick="window.location.reload(); return false;">刷新</a>`; -->
           list.appendChild(b);
         }
       }));
